@@ -58,7 +58,7 @@ WatermarkGui.Parent = guiParent
 
 local WatermarkFrame = Instance.new("Frame")
 WatermarkFrame.Name = "WatermarkFrame"
-WatermarkFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+WatermarkFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
 WatermarkFrame.BackgroundTransparency = 0
 WatermarkFrame.BorderSizePixel = 0
 WatermarkFrame.AnchorPoint = Vector2.new(1, 0)
@@ -69,19 +69,6 @@ WatermarkFrame.Parent = WatermarkGui
 local UICorner = Instance.new("UICorner")
 UICorner.CornerRadius = UDim.new(0, 6)
 UICorner.Parent = WatermarkFrame
-
--- Glow effect background
-local GlowImage = Instance.new("ImageLabel")
-GlowImage.Name = "GlowEffect"
-GlowImage.BackgroundTransparency = 1
-GlowImage.Image = "rbxassetid://11509756389"
-GlowImage.ImageColor3 = Color3.fromRGB(255, 46, 46)
-GlowImage.ImageTransparency = 0.3
-GlowImage.ScaleType = Enum.ScaleType.Stretch
-GlowImage.Size = UDim2.new(1, 0, 1, 0)
-GlowImage.Position = UDim2.new(0, 0, 0, 0)
-GlowImage.ZIndex = 1
-GlowImage.Parent = WatermarkFrame
 
 -- Container for text
 local TextContainer = Instance.new("Frame")
@@ -108,7 +95,20 @@ NemesisLabel.TextStrokeTransparency = 1
 NemesisLabel.ZIndex = 3
 NemesisLabel.Parent = TextContainer
 
--- UIGradient for NEMESIS text
+-- Glow effect ONLY under NEMESIS text
+local GlowImage = Instance.new("ImageLabel")
+GlowImage.Name = "GlowEffect"
+GlowImage.BackgroundTransparency = 1
+GlowImage.Image = "rbxassetid://11509756389"
+GlowImage.ImageColor3 = Color3.fromRGB(255, 46, 46)
+GlowImage.ImageTransparency = 0.3
+GlowImage.ScaleType = Enum.ScaleType.Fit
+GlowImage.Size = UDim2.new(0, 100, 1, 0)
+GlowImage.Position = UDim2.new(0, 0, 0, 0)
+GlowImage.ZIndex = 2
+GlowImage.Parent = TextContainer
+
+-- UIGradient for NEMESIS text with rotation animation
 local NemesisGradient = Instance.new("UIGradient")
 NemesisGradient.Color = ColorSequence.new({
 	ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 46, 46)),
@@ -133,9 +133,9 @@ InfoLabel.TextStrokeTransparency = 1
 InfoLabel.ZIndex = 3
 InfoLabel.Parent = TextContainer
 
--- Gradient animation variables
-local gradientOffset = 0
-local gradientSpeed = 0.5
+-- Gradient rotation animation variables
+local gradientRotation = 0
+local rotationSpeed = 30
 
 -- FPS Counter
 local fpsCounter = 0
@@ -169,18 +169,19 @@ local function updateWatermark(dt)
 		fpsUpdateTime = currentTime
 	end
 	
-	-- Animate gradient offset
-	gradientOffset = gradientOffset + (gradientSpeed * (dt or 0.016))
-	if gradientOffset >= 360 then
-		gradientOffset = 0
+	-- Animate gradient rotation
+	gradientRotation = gradientRotation + (rotationSpeed * (dt or 0.016))
+	if gradientRotation >= 360 then
+		gradientRotation = gradientRotation - 360
 	end
-	NemesisGradient.Rotation = gradientOffset
+	NemesisGradient.Rotation = gradientRotation
 	
-	-- Sync glow color with gradient
-	local currentAngle = math.rad(gradientOffset)
-	local r = 255 + (158 - 255) * (math.sin(currentAngle) * 0.5 + 0.5)
-	local g = 46 + (40 - 46) * (math.sin(currentAngle) * 0.5 + 0.5)
-	local b = 46 + (40 - 46) * (math.sin(currentAngle) * 0.5 + 0.5)
+	-- Sync glow color with gradient rotation
+	local currentAngle = math.rad(gradientRotation)
+	local blend = (math.sin(currentAngle * 2) * 0.5 + 0.5)
+	local r = 255 - (255 - 158) * blend
+	local g = 46 - (46 - 21) * blend
+	local b = 46 - (46 - 40) * blend
 	GlowImage.ImageColor3 = Color3.fromRGB(r, g, b)
 	
 	-- Update info
@@ -228,7 +229,11 @@ local function updateWatermark(dt)
 	local totalWidth = nemesisSize.X + infoSize.X + 24
 	WatermarkFrame.Size = UDim2.new(0, totalWidth, 0, 32)
 	
+	-- Update NEMESIS label and glow size
 	NemesisLabel.Size = UDim2.new(0, nemesisSize.X, 1, 0)
+	GlowImage.Size = UDim2.new(0, nemesisSize.X, 1, 0)
+	
+	-- Update info position
 	InfoLabel.Size = UDim2.new(0, infoSize.X, 1, 0)
 	InfoLabel.Position = UDim2.new(0, nemesisSize.X + 10, 0, 0)
 end
