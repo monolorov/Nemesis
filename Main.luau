@@ -47,126 +47,207 @@ Notification:Notify({
 -- ============================================
 local WatermarkEnabled = true
 local startTime = tick()
-
-local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
-local TextService = game:GetService("TextService")
-local TweenService = game:GetService("TweenService")
-
-local player = Players.LocalPlayer
-
-local fps = 0
-local frames = 0
-local lastFpsUpdate = tick()
-
-RunService.RenderStepped:Connect(function()
-	frames += 1
-	local now = tick()
-	if now - lastFpsUpdate >= 1 then
-		fps = frames
-		frames = 0
-		lastFpsUpdate = now
-	end
-end)
+local Stats = game:GetService("Stats")
 
 local WatermarkGui = Instance.new("ScreenGui")
 WatermarkGui.Name = "NemesisWatermark"
 WatermarkGui.ResetOnSpawn = false
+WatermarkGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 WatermarkGui.IgnoreGuiInset = true
-WatermarkGui.Parent = player:WaitForChild("PlayerGui")
+WatermarkGui.Parent = guiParent
 
-local Frame = Instance.new("Frame")
-Frame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-Frame.BorderSizePixel = 0
-Frame.Size = UDim2.new(0, 300, 0, 34)
-Frame.AnchorPoint = Vector2.new(1, 0)
-Frame.Position = UDim2.new(1, -12, 0, 40)
-Frame.Parent = WatermarkGui
+local WatermarkFrame = Instance.new("Frame")
+WatermarkFrame.Name = "WatermarkFrame"
+WatermarkFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+WatermarkFrame.BackgroundTransparency = 0
+WatermarkFrame.BorderSizePixel = 0
+WatermarkFrame.AnchorPoint = Vector2.new(1, 0)
+WatermarkFrame.Position = UDim2.new(1, -10, 0, 50)
+WatermarkFrame.Size = UDim2.new(0, 350, 0, 32)
+WatermarkFrame.Parent = WatermarkGui
 
-local Corner = Instance.new("UICorner")
-Corner.CornerRadius = UDim.new(0, 6)
-Corner.Parent = Frame
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 6)
+UICorner.Parent = WatermarkFrame
 
-local Stroke = Instance.new("UIStroke")
-Stroke.Color = Color3.fromRGB(255, 46, 46)
-Stroke.Thickness = 1.5
-Stroke.Parent = Frame
+-- Glow effect background
+local GlowImage = Instance.new("ImageLabel")
+GlowImage.Name = "GlowEffect"
+GlowImage.BackgroundTransparency = 1
+GlowImage.Image = "rbxassetid://11509756389"
+GlowImage.ImageColor3 = Color3.fromRGB(255, 46, 46)
+GlowImage.ImageTransparency = 0.3
+GlowImage.ScaleType = Enum.ScaleType.Stretch
+GlowImage.Size = UDim2.new(1, 0, 1, 0)
+GlowImage.Position = UDim2.new(0, 0, 0, 0)
+GlowImage.ZIndex = 1
+GlowImage.Parent = WatermarkFrame
 
-local Glow = Instance.new("ImageLabel")
-Glow.BackgroundTransparency = 1
-Glow.Image = "rbxassetid://11509756389"
-Glow.ScaleType = Enum.ScaleType.Slice
-Glow.SliceCenter = Rect.new(40, 40, 260, 260)
-Glow.ImageColor3 = Color3.fromRGB(255, 46, 46)
-Glow.Size = UDim2.new(1, 24, 1, 24)
-Glow.Position = UDim2.new(0.5, 0, 0.5, 0)
-Glow.AnchorPoint = Vector2.new(0.5, 0.5)
-Glow.ZIndex = 0
-Glow.Parent = Frame
+-- Container for text with gradient
+local TextContainer = Instance.new("Frame")
+TextContainer.Name = "TextContainer"
+TextContainer.BackgroundTransparency = 1
+TextContainer.Size = UDim2.new(1, -16, 1, 0)
+TextContainer.Position = UDim2.new(0, 12, 0, 0)
+TextContainer.ZIndex = 2
+TextContainer.Parent = WatermarkFrame
 
-local Text = Instance.new("TextLabel")
-Text.BackgroundTransparency = 1
-Text.Size = UDim2.new(1, -20, 1, 0)
-Text.Position = UDim2.new(0, 10, 0, 0)
-Text.Font = Enum.Font.GothamBold
-Text.TextSize = 13
-Text.TextXAlignment = Enum.TextXAlignment.Left
-Text.TextYAlignment = Enum.TextYAlignment.Center
-Text.TextColor3 = Color3.new(1,1,1)
-Text.ZIndex = 1
-Text.Parent = Frame
+-- NEMESIS text with gradient
+local NemesisLabel = Instance.new("TextLabel")
+NemesisLabel.Name = "NemesisText"
+NemesisLabel.BackgroundTransparency = 1
+NemesisLabel.Size = UDim2.new(0, 100, 1, 0)
+NemesisLabel.Position = UDim2.new(0, 0, 0, 0)
+NemesisLabel.Font = Enum.Font.GothamBold
+NemesisLabel.Text = "NEMESIS"
+NemesisLabel.TextColor3 = Color3.fromRGB(255, 46, 46)
+NemesisLabel.TextSize = 14
+NemesisLabel.TextXAlignment = Enum.TextXAlignment.Left
+NemesisLabel.TextYAlignment = Enum.TextYAlignment.Center
+NemesisLabel.TextStrokeTransparency = 1
+NemesisLabel.ZIndex = 3
+NemesisLabel.Parent = TextContainer
 
-local Gradient = Instance.new("UIGradient")
-Gradient.Color = ColorSequence.new({
-	ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 46, 46)),
-	ColorSequenceKeypoint.new(0.5, Color3.fromRGB(194, 21, 21)),
-	ColorSequenceKeypoint.new(1, Color3.fromRGB(158, 40, 40))
-})
-Gradient.Parent = Text
+-- Info text (username, time, fps, ping)
+local InfoLabel = Instance.new("TextLabel")
+InfoLabel.Name = "InfoText"
+InfoLabel.BackgroundTransparency = 1
+InfoLabel.Size = UDim2.new(1, -110, 1, 0)
+InfoLabel.Position = UDim2.new(0, 110, 0, 0)
+InfoLabel.Font = Enum.Font.GothamBold
+InfoLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+InfoLabel.TextSize = 13
+InfoLabel.TextXAlignment = Enum.TextXAlignment.Left
+InfoLabel.TextYAlignment = Enum.TextYAlignment.Center
+InfoLabel.TextStrokeTransparency = 1
+InfoLabel.ZIndex = 3
+InfoLabel.Parent = TextContainer
 
-local gradientTween = TweenService:Create(
-	Gradient,
-	TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1),
-	{Offset = Vector2.new(1, 0)}
-)
-gradientTween:Play()
+-- Gradient animation for NEMESIS text
+local gradientColors = {
+	Color3.fromRGB(255, 46, 46),
+	Color3.fromRGB(194, 21, 21),
+	Color3.fromRGB(158, 40, 40)
+}
 
-local function formatTime(sec)
-	local h = math.floor(sec / 3600)
-	local m = math.floor((sec % 3600) / 60)
-	local s = math.floor(sec % 60)
-	return string.format("%02d:%02d:%02d", h, m, s)
+local gradientIndex = 1
+local gradientProgress = 0
+local gradientSpeed = 0.02
+
+-- FPS Counter
+local fpsCounter = 0
+local fpsUpdateTime = tick()
+local currentFPS = 60
+
+-- Format time function
+local function formatTime(seconds)
+	local hours = math.floor(seconds / 3600)
+	local minutes = math.floor((seconds % 3600) / 60)
+	local secs = math.floor(seconds % 60)
+	return string.format("%02d:%02d:%02d", hours, minutes, secs)
 end
 
-local function update()
+-- Lerp color function
+local function lerpColor(c1, c2, alpha)
+	return Color3.new(
+		c1.R + (c2.R - c1.R) * alpha,
+		c1.G + (c2.G - c1.G) * alpha,
+		c1.B + (c2.B - c1.B) * alpha
+	)
+end
+
+-- Update watermark
+local watermarkConnection
+local function updateWatermark()
 	if not WatermarkEnabled then
-		Frame.Visible = false
+		WatermarkFrame.Visible = false
 		return
 	end
-
-	Frame.Visible = true
-
-	local text = string.format(
-		"NEMESIS  |  %s  |  %s  |  %d FPS",
+	
+	WatermarkFrame.Visible = true
+	
+	-- Update FPS counter
+	fpsCounter = fpsCounter + 1
+	local currentTime = tick()
+	if currentTime - fpsUpdateTime >= 1 then
+		currentFPS = fpsCounter
+		fpsCounter = 0
+		fpsUpdateTime = currentTime
+	end
+	
+	-- Update gradient animation for NEMESIS text
+	gradientProgress = gradientProgress + gradientSpeed
+	if gradientProgress >= 1 then
+		gradientProgress = 0
+		gradientIndex = gradientIndex + 1
+		if gradientIndex > #gradientColors then
+			gradientIndex = 1
+		end
+	end
+	
+	local nextIndex = gradientIndex + 1
+	if nextIndex > #gradientColors then
+		nextIndex = 1
+	end
+	
+	local currentColor = lerpColor(gradientColors[gradientIndex], gradientColors[nextIndex], gradientProgress)
+	NemesisLabel.TextColor3 = currentColor
+	GlowImage.ImageColor3 = currentColor
+	
+	-- Update info
+	local elapsedTime = tick() - startTime
+	
+	-- Get ping (ms)
+	local ping = 0
+	pcall(function()
+		ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue())
+	end)
+	
+	-- Build info text
+	local infoText = string.format(
+		"  |  %s  |  %s  |  %d FPS  |  %d ms",
 		player.Name,
-		formatTime(tick() - startTime),
-		fps
+		formatTime(elapsedTime),
+		currentFPS,
+		ping
 	)
-
-	Text.Text = text
-
-	local size = TextService:GetTextSize(
-		text,
-		Text.TextSize,
-		Text.Font,
-		Vector2.new(math.huge, 34)
+	
+	InfoLabel.Text = infoText
+	
+	-- Auto-resize frame to fit text
+	local nemesisSize = game:GetService("TextService"):GetTextSize(
+		NemesisLabel.Text,
+		NemesisLabel.TextSize,
+		NemesisLabel.Font,
+		Vector2.new(math.huge, NemesisLabel.AbsoluteSize.Y)
 	)
-
-	Frame.Size = UDim2.new(0, size.X + 32, 0, 34)
+	
+	local infoSize = game:GetService("TextService"):GetTextSize(
+		InfoLabel.Text,
+		InfoLabel.TextSize,
+		InfoLabel.Font,
+		Vector2.new(math.huge, InfoLabel.AbsoluteSize.Y)
+	)
+	
+	local totalWidth = nemesisSize.X + infoSize.X + 24
+	WatermarkFrame.Size = UDim2.new(0, totalWidth, 0, 32)
+	
+	NemesisLabel.Size = UDim2.new(0, nemesisSize.X, 1, 0)
+	InfoLabel.Size = UDim2.new(0, infoSize.X, 1, 0)
+	InfoLabel.Position = UDim2.new(0, nemesisSize.X + 10, 0, 0)
 end
 
-RunService.RenderStepped:Connect(update)
-update()
+-- Start watermark update loop
+watermarkConnection = RunService.RenderStepped:Connect(updateWatermark)
+
+-- Function to toggle watermark
+local function setWatermarkEnabled(enabled)
+	WatermarkEnabled = enabled
+	updateWatermark()
+end
+
+-- Initial update
+updateWatermark()
 
 -- ============================================
 -- Variables and Flags
