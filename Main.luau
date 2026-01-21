@@ -53,14 +53,8 @@ WatermarkGui.IgnoreGuiInset = true
 WatermarkGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 WatermarkGui.Parent = guiParent
 
-local GlowLayer = Instance.new("Frame")
-GlowLayer.BackgroundTransparency = 1
-GlowLayer.Size = UDim2.fromScale(1, 1)
-GlowLayer.ZIndex = 5
-GlowLayer.Parent = WatermarkGui
-
 local WatermarkFrame = Instance.new("Frame")
-WatermarkFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+WatermarkFrame.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
 WatermarkFrame.BorderSizePixel = 0
 WatermarkFrame.AnchorPoint = Vector2.new(1, 0)
 WatermarkFrame.Position = UDim2.new(1, -10, 0, 50)
@@ -108,15 +102,6 @@ InfoLabel.Size = UDim2.new(0, 200, 1, 0)
 InfoLabel.ZIndex = 12
 InfoLabel.Parent = TextContainer
 
-local NemesisGlow = Instance.new("ImageLabel")
-NemesisGlow.BackgroundTransparency = 1
-NemesisGlow.Image = "rbxassetid://11509756389"
-NemesisGlow.ImageTransparency = 0.25
-NemesisGlow.ScaleType = Enum.ScaleType.Slice
-NemesisGlow.SliceCenter = Rect.new(12, 12, 244, 244)
-NemesisGlow.ZIndex = 9
-NemesisGlow.Parent = GlowLayer
-
 local fpsCounter = 0
 local fpsTick = tick()
 local currentFPS = 0
@@ -134,12 +119,10 @@ end
 RunService.RenderStepped:Connect(function(dt)
 	if not WatermarkEnabled then
 		WatermarkFrame.Visible = false
-		NemesisGlow.Visible = false
 		return
 	end
 
 	WatermarkFrame.Visible = true
-	NemesisGlow.Visible = true
 
 	fpsCounter += 1
 	if tick() - fpsTick >= 1 then
@@ -151,18 +134,13 @@ RunService.RenderStepped:Connect(function(dt)
 	rotation = (rotation + dt * 30) % 360
 	NemesisGradient.Rotation = rotation
 
-	local a = math.sin(math.rad(rotation * 2)) * 0.5 + 0.5
-	NemesisGlow.ImageColor3 = Color3.fromRGB(
-		255 - (255 - 158) * a,
-		46 - (46 - 21) * a,
-		46 - (46 - 40) * a
-	)
-
 	local ping = 0
 	pcall(function()
 		local n = Stats.Network.ServerStatsItem
 		local p = n and n:FindFirstChild("Data Ping")
-		if p then ping = math.floor(p:GetValue()) end
+		if p then
+			ping = math.floor(p:GetValue())
+		end
 	end)
 
 	InfoLabel.Text = string.format(
@@ -182,10 +160,6 @@ RunService.RenderStepped:Connect(function(dt)
 	InfoLabel.Size = UDim2.fromOffset(iSize.X, 32)
 
 	WatermarkFrame.Size = UDim2.fromOffset(nSize.X + iSize.X + 28, 32)
-
-	local absPos = WatermarkFrame.AbsolutePosition
-	NemesisGlow.Position = UDim2.fromOffset(absPos.X + 6, absPos.Y + 16 - 23)
-	NemesisGlow.Size = UDim2.fromOffset(nSize.X + 20, 46)
 end)
 
 -- ============================================
