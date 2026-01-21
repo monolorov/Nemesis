@@ -622,6 +622,7 @@ do
 		end
 	})
 
+	--[[
 	UI.NoSpreadToggle = Extra:AddToggle({
 		Name = "No Spread (Airshot)",
 		Callback = function(value)
@@ -629,6 +630,7 @@ do
 			Rage:SetNoSpread(value)
 		end
 	})
+	]]
 
 	UI.AutoEquipToggle = Extra:AddToggle({
 		Name = "Auto Equip SSG",
