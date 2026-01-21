@@ -107,12 +107,14 @@ NemesisGlow.Name = "GlowEffect"
 NemesisGlow.BackgroundTransparency = 1
 NemesisGlow.Image = "rbxassetid://11509756389"
 NemesisGlow.ImageColor3 = Color3.fromRGB(255, 46, 46)
-NemesisGlow.ImageTransparency = 0.3
-NemesisGlow.ScaleType = Enum.ScaleType.Fit
-NemesisGlow.Size = UDim2.new(0, 100, 1, 0)
-NemesisGlow.Position = UDim2.new(0, 0, 0, 0)
-NemesisGlow.ZIndex = 2
-NemesisGlow.Parent = TextContainer
+NemesisGlow.ImageTransparency = 0.25
+NemesisGlow.ScaleType = Enum.ScaleType.Slice
+NemesisGlow.SliceCenter = Rect.new(12, 12, 244, 244)
+NemesisGlow.AnchorPoint = Vector2.new(0, 0.5)
+NemesisGlow.Position = UDim2.new(0, -10, 0.5, 0)
+NemesisGlow.Size = UDim2.new(1, 20, 0, 46)
+NemesisGlow.ZIndex = NemesisLabel.ZIndex - 1
+NemesisGlow.Parent = NemesisLabel
 
 local InfoLabel = Instance.new("TextLabel")
 InfoLabel.Name = "InfoText"
@@ -222,7 +224,7 @@ local function updateWatermark(dt)
 	
 	-- Update NEMESIS label and glow size
 	NemesisLabel.Size = UDim2.new(0, nemesisSize.X, 1, 0)
-	NemesisGlow.Size = UDim2.new(0, nemesisSize.X, 1, 0)
+	NemesisGlow.Size = UDim2.new(0, nemesisSize.X + 20, 0, 46)
 	
 	-- Update info position
 	InfoLabel.Size = UDim2.new(0, infoSize.X, 1, 0)
