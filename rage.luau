@@ -431,3 +431,114 @@ function RageModule:Start()
 
 			local direction = dirVec.Unit
 			local ray = Ray.new(origin, direction * 1000)
+			local ok = pcall(function()
+				gun.castRay:FireServer(ray, targetPos, target.player, target.targetPart)
+			end)
+
+			if ok then
+				self.lastShot = currentTime
+				task.defer(function()
+					self.Visuals:CreateTracer(origin, targetPos)
+				end)
+			end
+		end
+	end)
+end
+
+-- ============================================
+-- SETTERS
+-- ============================================
+function RageModule:SetEnabled(value)
+	self.RAGE_ENABLED = value
+end
+
+function RageModule:SetHitpart(value)
+	self.RAGE_HITPART = value
+end
+
+function RageModule:SetHitchance(value)
+	self.RAGE_HITCHANCE = value
+end
+
+function RageModule:SetHitchanceEnabled(value)
+	self.RAGE_HITCHANCE_ENABLED = value
+end
+
+function RageModule:SetAutoShoot(value)
+	self.RAGE_AUTOSHOOT = value
+end
+
+function RageModule:SetNoSpread(value)
+	self.RAGE_NOSPREAD = value
+end
+
+function RageModule:SetAutoEquipSSG(value)
+	self.AUTO_EQUIP_SSG = value
+end
+
+function RageModule:SetMaxDistance(value)
+	self.MAX_DISTANCE = value
+end
+
+function RageModule:SetPredictionEnabled(value)
+	self.PREDICTION_ENABLED = value
+end
+
+function RageModule:SetPredictionStrength(value)
+	self.PREDICTION_STRENGTH = value
+end
+
+function RageModule:SetMinDamageEnabled(value)
+	self.MIN_DAMAGE_ENABLED = value
+	if value then
+		self.Notification:Notify({
+			Title = "MinDamage",
+			Content = "Enabled - Will target lower damage body parts",
+			Icon = "info",
+			Duration = 3
+		})
+	end
+end
+
+function RageModule:SetMinDamageValue(value)
+	self.MIN_DAMAGE_VALUE = value
+end
+
+-- ============================================
+-- CONFIG FUNCTIONS
+-- ============================================
+function RageModule:GetSettings()
+	return {
+		RAGE_ENABLED = self.RAGE_ENABLED,
+		RAGE_HITPART = self.RAGE_HITPART,
+		RAGE_HITCHANCE = self.RAGE_HITCHANCE,
+		RAGE_HITCHANCE_ENABLED = self.RAGE_HITCHANCE_ENABLED,
+		RAGE_AUTOSHOOT = self.RAGE_AUTOSHOOT,
+		RAGE_NOSPREAD = self.RAGE_NOSPREAD,
+		AUTO_EQUIP_SSG = self.AUTO_EQUIP_SSG,
+		MAX_DISTANCE = self.MAX_DISTANCE,
+		PREDICTION_ENABLED = self.PREDICTION_ENABLED,
+		PREDICTION_STRENGTH = self.PREDICTION_STRENGTH,
+		MIN_DAMAGE_ENABLED = self.MIN_DAMAGE_ENABLED,
+		MIN_DAMAGE_VALUE = self.MIN_DAMAGE_VALUE,
+	}
+end
+
+function RageModule:ApplySettings(settings)
+	if not settings then return end
+
+	if settings.RAGE_ENABLED ~= nil then self:SetEnabled(settings.RAGE_ENABLED) end
+	if settings.RAGE_HITPART ~= nil then self:SetHitpart(settings.RAGE_HITPART) end
+	if settings.RAGE_HITCHANCE ~= nil then self:SetHitchance(settings.RAGE_HITCHANCE) end
+	if settings.RAGE_HITCHANCE_ENABLED ~= nil then self:SetHitchanceEnabled(settings.RAGE_HITCHANCE_ENABLED) end
+	if settings.RAGE_AUTOSHOOT ~= nil then self:SetAutoShoot(settings.RAGE_AUTOSHOOT) end
+	if settings.RAGE_NOSPREAD ~= nil then self:SetNoSpread(settings.RAGE_NOSPREAD) end
+	if settings.AUTO_EQUIP_SSG ~= nil then self:SetAutoEquipSSG(settings.AUTO_EQUIP_SSG) end
+	if settings.MAX_DISTANCE ~= nil then self:SetMaxDistance(settings.MAX_DISTANCE) end
+	if settings.PREDICTION_ENABLED ~= nil then self:SetPredictionEnabled(settings.PREDICTION_ENABLED) end
+	if settings.PREDICTION_STRENGTH ~= nil then self:SetPredictionStrength(settings.PREDICTION_STRENGTH) end
+	if settings.MIN_DAMAGE_ENABLED ~= nil then self:SetMinDamageEnabled(settings.MIN_DAMAGE_ENABLED) end
+	if settings.MIN_DAMAGE_VALUE ~= nil then self:SetMinDamageValue(settings.MIN_DAMAGE_VALUE) end
+end
+
+return RageModule
