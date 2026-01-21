@@ -160,38 +160,31 @@ local currentConfigName = "default"
 
 local function getAllSettings()
 	local settings = {}
-	
-	-- Get Rage settings
+
 	local rageSettings = Rage:GetSettings()
 	for k, v in pairs(rageSettings) do
 		settings[k] = v
 	end
-	
-	-- Get Visuals settings
+
 	local visualSettings = Visuals:GetSettings()
 	for k, v in pairs(visualSettings) do
 		settings[k] = v
 	end
 
-local worldSettings = World:Export()
-for k, v in pairs(worldSettings) do
-	settings[k] = v
-end
-	
+	local worldSettings = World:Export()
+	for k, v in pairs(worldSettings) do
+		settings[k] = v
+	end
+
 	return settings
 end
 
 local function applySettings(settings)
 	if not settings then return end
-	
-	-- Apply to Rage
+
 	Rage:ApplySettings(settings)
-	
-	-- Apply to Visuals
 	Visuals:ApplySettings(settings)
-
-World:Import(settings)
-
+	World:Import(settings)
 end
 
 local function saveConfig(configName)
