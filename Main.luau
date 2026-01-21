@@ -43,6 +43,113 @@ Notification:Notify({
 })
 
 -- ============================================
+-- WATERMARK SYSTEM
+-- ============================================
+local WatermarkEnabled = true
+local startTime = tick()
+local Stats = game:GetService("Stats")
+
+local WatermarkGui = Instance.new("ScreenGui")
+WatermarkGui.Name = "NemesisWatermark"
+WatermarkGui.ResetOnSpawn = false
+WatermarkGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+WatermarkGui.IgnoreGuiInset = true
+WatermarkGui.Parent = guiParent
+
+local WatermarkFrame = Instance.new("Frame")
+WatermarkFrame.Name = "WatermarkFrame"
+WatermarkFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+WatermarkFrame.BackgroundTransparency = 0.2
+WatermarkFrame.BorderSizePixel = 0
+WatermarkFrame.Position = UDim2.new(0, 10, 0, 10)
+WatermarkFrame.Size = UDim2.new(0, 350, 0, 32)
+WatermarkFrame.Parent = WatermarkGui
+
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 6)
+UICorner.Parent = WatermarkFrame
+
+local UIStroke = Instance.new("UIStroke")
+UIStroke.Color = Color3.fromRGB(255, 100, 220)
+UIStroke.Thickness = 1.5
+UIStroke.Transparency = 0.2
+UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+UIStroke.Parent = WatermarkFrame
+
+local WatermarkLabel = Instance.new("TextLabel")
+WatermarkLabel.Name = "WatermarkText"
+WatermarkLabel.BackgroundTransparency = 1
+WatermarkLabel.Size = UDim2.new(1, -16, 1, 0)
+WatermarkLabel.Position = UDim2.new(0, 12, 0, 0)
+WatermarkLabel.Font = Enum.Font.GothamBold
+WatermarkLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+WatermarkLabel.TextSize = 13
+WatermarkLabel.TextXAlignment = Enum.TextXAlignment.Left
+WatermarkLabel.TextYAlignment = Enum.TextYAlignment.Center
+WatermarkLabel.TextStrokeTransparency = 0.8
+WatermarkLabel.Parent = WatermarkFrame
+
+-- Format time function
+local function formatTime(seconds)
+	local hours = math.floor(seconds / 3600)
+	local minutes = math.floor((seconds % 3600) / 60)
+	local secs = math.floor(seconds % 60)
+	return string.format("%02d:%02d:%02d", hours, minutes, secs)
+end
+
+-- Update watermark
+local watermarkConnection
+local function updateWatermark()
+	if not WatermarkEnabled then
+		WatermarkFrame.Visible = false
+		return
+	end
+	
+	WatermarkFrame.Visible = true
+	
+	local elapsedTime = tick() - startTime
+	local fps = math.floor(workspace:GetRealPhysicsFPS())
+	
+	-- Get ping (ms)
+	local ping = 0
+	pcall(function()
+		ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue())
+	end)
+	
+	-- Build watermark text with separators
+	local text = string.format(
+		"NEMESIS  |  %s  |  %s  |  %d FPS  |  %d ms",
+		player.Name,
+		formatTime(elapsedTime),
+		fps,
+		ping
+	)
+	
+	WatermarkLabel.Text = text
+	
+	-- Auto-resize frame to fit text
+	local textSize = game:GetService("TextService"):GetTextSize(
+		text,
+		WatermarkLabel.TextSize,
+		WatermarkLabel.Font,
+		Vector2.new(math.huge, WatermarkLabel.AbsoluteSize.Y)
+	)
+	WatermarkFrame.Size = UDim2.new(0, textSize.X + 24, 0, 32)
+end
+
+-- Start watermark update loop
+watermarkConnection = RunService.RenderStepped:Connect(updateWatermark)
+
+-- Function to toggle watermark
+local function setWatermarkEnabled(enabled)
+	WatermarkEnabled = enabled
+	updateWatermark()
+end
+
+-- Initial update
+updateWatermark()
+
+-- ============================================
 -- Variables and Flags
 -- ============================================
 local flags = ReplicatedStorage:FindFirstChild("QuantumMovementFlags")
@@ -176,6 +283,9 @@ local function getAllSettings()
 		settings[k] = v
 	end
 
+	-- Add watermark setting
+	settings.WATERMARK_ENABLED = WatermarkEnabled
+
 	return settings
 end
 
@@ -185,6 +295,11 @@ local function applySettings(settings)
 	Rage:ApplySettings(settings)
 	Visuals:ApplySettings(settings)
 	World:Import(settings)
+	
+	-- Apply watermark setting
+	if settings.WATERMARK_ENABLED ~= nil then
+		setWatermarkEnabled(settings.WATERMARK_ENABLED)
+	end
 end
 
 local function saveConfig(configName)
@@ -261,15 +376,15 @@ local function syncUIFromVars()
 	uiSet(UI.PredictionToggle, rageSettings.PREDICTION_ENABLED)
 	uiSet(UI.PredStrengthSlider, rageSettings.PREDICTION_STRENGTH)
 
-local ws = World:Export()
+	local ws = World:Export()
 
-uiSet(UI.CustomLighting, ws.LIGHTING_EDIT_ENABLED)
-uiSet(UI.WorldBrightness, ws.CUSTOM_BRIGHTNESS)
-uiSet(UI.TimePreset, ws.TIME_PRESET)
-uiSet(UI.ClockTime, ws.CUSTOM_CLOCKTIME)
-uiSet(UI.CustomTime, ws.WORLD_TIME_ENABLED)
-uiSet(UI.SkyPreset, ws.CUSTOM_SKY_PRESET)
-uiSet(UI.CustomSky, ws.CUSTOM_SKY_ENABLED)
+	uiSet(UI.CustomLighting, ws.LIGHTING_EDIT_ENABLED)
+	uiSet(UI.WorldBrightness, ws.CUSTOM_BRIGHTNESS)
+	uiSet(UI.TimePreset, ws.TIME_PRESET)
+	uiSet(UI.ClockTime, ws.CUSTOM_CLOCKTIME)
+	uiSet(UI.CustomTime, ws.WORLD_TIME_ENABLED)
+	uiSet(UI.SkyPreset, ws.CUSTOM_SKY_PRESET)
+	uiSet(UI.CustomSky, ws.CUSTOM_SKY_ENABLED)
 	
 	-- Sync Visuals UI
 	local visualSettings = Visuals:GetSettings()
@@ -287,6 +402,9 @@ uiSet(UI.CustomSky, ws.CUSTOM_SKY_ENABLED)
 	uiSet(UI.KillFXType, visualSettings.KILLFX_TYPE)
 	uiSet(UI.BacktrackGhostToggle, visualSettings.BACKTRACK_GHOST_ENABLED)
 	uiSet(UI.BacktrackGhostDuration, visualSettings.BACKTRACK_GHOST_DURATION)
+	
+	-- Sync Watermark
+	uiSet(UI.WatermarkToggle, WatermarkEnabled)
 	
 	APPLYING_CONFIG = false
 	Visuals:UpdateKeybindDisplay()
@@ -531,6 +649,15 @@ do
 		Position = 'left'
 	})
 
+	UI.WatermarkToggle = Main:AddToggle({
+		Name = "Watermark",
+		Default = true,
+		Callback = function(value)
+			if APPLYING_CONFIG then return end
+			setWatermarkEnabled(value)
+		end
+	})
+
 	UI.HitlogsToggle = Main:AddToggle({
 		Name = "HitLogs",
 		Callback = function(value)
@@ -596,96 +723,96 @@ do
 		end
 	})
 
-local WorldSec = VisualTab:AddSection({
-	Name = "WORLD",
-	Position = "right"
-})
+	local WorldSec = VisualTab:AddSection({
+		Name = "WORLD",
+		Position = "right"
+	})
 
-UI.CustomLighting = WorldSec:AddToggle({
-	Name = "Custom Lighting",
-	Callback = function(v)
-		if APPLYING_CONFIG then return end
-		World:SetLightingEnabled(v)
-	end
-})
+	UI.CustomLighting = WorldSec:AddToggle({
+		Name = "Custom Lighting",
+		Callback = function(v)
+			if APPLYING_CONFIG then return end
+			World:SetLightingEnabled(v)
+		end
+	})
 
-UI.WorldBrightness = WorldSec:AddSlider({
-	Name = "Brightness",
-	Min = 0,
-	Max = 10,
-	Default = Lighting.Brightness,
-	Round = 2,
-	Callback = function(v)
-		if APPLYING_CONFIG then return end
-		World:SetBrightness(v)
-	end
-})
+	UI.WorldBrightness = WorldSec:AddSlider({
+		Name = "Brightness",
+		Min = 0,
+		Max = 10,
+		Default = Lighting.Brightness,
+		Round = 2,
+		Callback = function(v)
+			if APPLYING_CONFIG then return end
+			World:SetBrightness(v)
+		end
+	})
 
-UI.WorldAmbient = WorldSec:AddColorPicker({
-	Name = "Ambient",
-	Default = Lighting.Ambient,
-	Callback = function(c)
-		if APPLYING_CONFIG then return end
-		World:SetAmbient(c)
-	end
-})
+	UI.WorldAmbient = WorldSec:AddColorPicker({
+		Name = "Ambient",
+		Default = Lighting.Ambient,
+		Callback = function(c)
+			if APPLYING_CONFIG then return end
+			World:SetAmbient(c)
+		end
+	})
 
-UI.WorldOutdoorAmbient = WorldSec:AddColorPicker({
-	Name = "OutdoorAmbient",
-	Default = Lighting.OutdoorAmbient,
-	Callback = function(c)
-		if APPLYING_CONFIG then return end
-		World:SetOutdoorAmbient(c)
-	end
-})
+	UI.WorldOutdoorAmbient = WorldSec:AddColorPicker({
+		Name = "OutdoorAmbient",
+		Default = Lighting.OutdoorAmbient,
+		Callback = function(c)
+			if APPLYING_CONFIG then return end
+			World:SetOutdoorAmbient(c)
+		end
+	})
 
-UI.TimePreset = WorldSec:AddDropdown({
-	Name = "Time Preset",
-	Values = {"Default", "Day", "Sunset", "Night"},
-	Default = "Default",
-	Callback = function(v)
-		if APPLYING_CONFIG then return end
-		World:SetTimePreset(v)
-	end
-})
+	UI.TimePreset = WorldSec:AddDropdown({
+		Name = "Time Preset",
+		Values = {"Default", "Day", "Sunset", "Night"},
+		Default = "Default",
+		Callback = function(v)
+			if APPLYING_CONFIG then return end
+			World:SetTimePreset(v)
+		end
+	})
 
-UI.ClockTime = WorldSec:AddSlider({
-	Name = "ClockTime",
-	Min = 0,
-	Max = 24,
-	Default = Lighting.ClockTime,
-	Round = 2,
-	Callback = function(v)
-		if APPLYING_CONFIG then return end
-		World:SetClockTime(v)
-	end
-})
+	UI.ClockTime = WorldSec:AddSlider({
+		Name = "ClockTime",
+		Min = 0,
+		Max = 24,
+		Default = Lighting.ClockTime,
+		Round = 2,
+		Callback = function(v)
+			if APPLYING_CONFIG then return end
+			World:SetClockTime(v)
+		end
+	})
 
-UI.CustomTime = WorldSec:AddToggle({
-	Name = "Custom Time",
-	Callback = function(v)
-		if APPLYING_CONFIG then return end
-		World:SetTimeEnabled(v)
-	end
-})
+	UI.CustomTime = WorldSec:AddToggle({
+		Name = "Custom Time",
+		Callback = function(v)
+			if APPLYING_CONFIG then return end
+			World:SetTimeEnabled(v)
+		end
+	})
 
-UI.SkyPreset = WorldSec:AddDropdown({
-	Name = "Sky Preset",
-	Values = {"Original", "Blue"},
-	Default = "Original",
-	Callback = function(v)
-		if APPLYING_CONFIG then return end
-		World:SetSkyPreset(v)
-	end
-})
+	UI.SkyPreset = WorldSec:AddDropdown({
+		Name = "Sky Preset",
+		Values = {"Original", "Blue"},
+		Default = "Original",
+		Callback = function(v)
+			if APPLYING_CONFIG then return end
+			World:SetSkyPreset(v)
+		end
+	})
 
-UI.CustomSky = WorldSec:AddToggle({
-	Name = "Custom Sky",
-	Callback = function(v)
-		if APPLYING_CONFIG then return end
-		World:SetSkyEnabled(v)
-	end
-})
+	UI.CustomSky = WorldSec:AddToggle({
+		Name = "Custom Sky",
+		Callback = function(v)
+			if APPLYING_CONFIG then return end
+			World:SetSkyEnabled(v)
+		end
+	})
 
 	local KillFX = VisualTab:AddSection({
 		Name = "KILL EFFECTS",
@@ -1153,4 +1280,4 @@ Rage:Start()
 Visuals:Start()
 
 syncUIFromVars()
-print("✅ Nemesis Loaded")
+print("Nemesis Loaded")
