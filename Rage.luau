@@ -36,7 +36,7 @@ function RageModule.new(config)
 	-- Internal state
 	self.lastShot = 0
 	self.FIRE_RATE = 0.1
-	self.FIRE_RATE_AWP = 1.2
+	self.FIRE_RATE_AWP = 1.3
 	self.ping = 0
 	self.lastPingUpdate = 0
 	self.PING_UPDATE_RATE = 1
