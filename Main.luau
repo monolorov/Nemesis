@@ -13,15 +13,15 @@ local player = Players.LocalPlayer
 local guiParent = player:WaitForChild("PlayerGui")
 
 -- ============================================
--- Load modules (с правильными именами!)
+-- Load modules
 -- ============================================
 print("[NEMESIS] Loading Visuals module...")
 local VisualsModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/monolorov/Nemesis/refs/heads/main/Visuals.luau"))()
-print("[NEMESIS] ✓ Visuals loaded")
+print("[NEMESIS] Visuals loaded")
 
 print("[NEMESIS] Loading Rage module...")
 local RageModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/monolorov/Nemesis/refs/heads/main/Rage.luau"))()
-print("[NEMESIS] ✓ Rage loaded")
+print("[NEMESIS] Rage loaded")
 
 -- ============================================
 -- Loader
