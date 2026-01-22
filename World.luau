@@ -28,33 +28,87 @@ function World.new()
 		Night = 0
 	}
 
-	self.CUSTOM_SKY_ENABLED = false
-	self.CUSTOM_SKY_PRESET = "Original"
+self.CUSTOM_SKY_ENABLED = false
+self.CUSTOM_SKY_PRESET = "Original"
 
-	self.SKY_PRESETS = {
-		Original = {
-			SkyboxBk = "rbxassetid://148345460",
-			SkyboxDn = "rbxassetid://148345469",
-			SkyboxFt = "rbxassetid://148345455",
-			SkyboxLf = "rbxassetid://148345446",
-			SkyboxRt = "rbxassetid://148345440",
-			SkyboxUp = "rbxassetid://148345466",
-			SunTextureId = "rbxassetid://1345009717",
-			MoonTextureId = "rbxasset://sky/moon.jpg",
-			StarCount = 3000
-		},
-		Blue = {
-			SkyboxBk = "rbxassetid://124106120273678",
-			SkyboxDn = "rbxassetid://72406028001064",
-			SkyboxFt = "rbxassetid://139238600782726",
-			SkyboxLf = "rbxassetid://139363840022859",
-			SkyboxRt = "rbxassetid://122628916393316",
-			SkyboxUp = "rbxassetid://104354476381566",
-			SunTextureId = "",
-			MoonTextureId = "",
-			StarCount = 3000
-		}
+self.SKY_PRESETS = {
+	Original = nil,
+
+	Gray = {
+		CelestialBodiesShown = true,
+		MoonAngularSize = 6,
+		MoonTextureId = "rbxasset://sky/moon.jpg",
+		SkyboxBk = "rbxassetid://15063412549",
+		SkyboxDn = "rbxassetid://15063431496",
+		SkyboxFt = "rbxassetid://15063442046",
+		SkyboxLf = "rbxassetid://15063637382",
+		SkyboxRt = "rbxassetid://15063435355",
+		SkyboxUp = "rbxassetid://15063533447",
+		StarCount = 3000,
+		SunAngularSize = 9,
+		SunTextureId = "rbxasset://sky/sun.jpg"
+	},
+
+	Dark = {
+		CelestialBodiesShown = true,
+		MoonAngularSize = 11,
+		MoonTextureId = "rbxasset://sky/moon.jpg",
+		SkyboxBk = "rbxassetid://2013298",
+		SkyboxDn = "rbxassetid://2013298",
+		SkyboxFt = "rbxassetid://2013298",
+		SkyboxLf = "rbxassetid://2013298",
+		SkyboxRt = "rbxassetid://2013298",
+		SkyboxUp = "rbxassetid://2013298",
+		StarCount = 3000,
+		SunAngularSize = 21,
+		SunTextureId = "rbxasset://sky/sun.jpg"
+	},
+
+	Green = {
+		CelestialBodiesShown = false,
+		MoonAngularSize = 11,
+		MoonTextureId = "rbxasset://sky/moon.jpg",
+		SkyboxBk = "rbxassetid://56661187",
+		SkyboxDn = "rbxassetid://566611398",
+		SkyboxFt = "rbxassetid://566611142",
+		SkyboxLf = "rbxassetid://566611266",
+		SkyboxRt = "rbxassetid://566611300",
+		SkyboxUp = "rbxassetid://566611218",
+		StarCount = 3000,
+		SunAngularSize = 21,
+		SunTextureId = "rbxasset://sky/sun.jpg"
+	},
+
+	Pink = {
+		CelestialBodiesShown = false,
+		MoonAngularSize = 11,
+		MoonTextureId = "rbxasset://sky/moon.jpg",
+		SkyboxBk = "rbxassetid://271042516",
+		SkyboxDn = "rbxassetid://271077243",
+		SkyboxFt = "rbxassetid://271042556",
+		SkyboxLf = "rbxassetid://271042310",
+		SkyboxRt = "rbxassetid://271042467",
+		SkyboxUp = "rbxassetid://271077958",
+		StarCount = 0,
+		SunAngularSize = 21,
+		SunTextureId = "rbxasset://sky/sun.jpg"
+	},
+
+	Orange = {
+		CelestialBodiesShown = true,
+		MoonAngularSize = 11,
+		MoonTextureId = "rbxasset://sky/moon.jpg",
+		SkyboxBk = "rbxassetid://150939022",
+		SkyboxDn = "rbxassetid://150939038",
+		SkyboxFt = "rbxassetid://150939047",
+		SkyboxLf = "rbxassetid://150939056",
+		SkyboxRt = "rbxassetid://150939063",
+		SkyboxUp = "rbxassetid://150939082",
+		StarCount = 3000,
+		SunAngularSize = 21,
+		SunTextureId = "rbxasset://sky/sun.jpg"
 	}
+}
 
 	local s = Lighting:FindFirstChildOfClass("Sky")
 	if s then
