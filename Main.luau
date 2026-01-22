@@ -442,6 +442,24 @@ local function syncUIFromVars()
 	uiSet(UI.BacktrackGhostToggle, visualSettings.BACKTRACK_GHOST_ENABLED)
 	uiSet(UI.BacktrackGhostDuration, visualSettings.BACKTRACK_GHOST_DURATION)
 
+local vs = Visuals:GetSettings()
+
+uiSet(UI.AtmoEnabled, vs.ATMOSPHERE_ENABLED)
+uiSet(UI.AtmoDensity, vs.ATMOSPHERE_DENSITY)
+uiSet(UI.AtmoOffset, vs.ATMOSPHERE_OFFSET)
+uiSet(UI.AtmoGlare, vs.ATMOSPHERE_GLARE)
+uiSet(UI.AtmoHaze, vs.ATMOSPHERE_HAZE)
+
+uiSet(UI.BloomEnabled, vs.BLOOM_ENABLED)
+uiSet(UI.BloomIntensity, vs.BLOOM_INTENSITY)
+uiSet(UI.BloomSize, vs.BLOOM_SIZE)
+uiSet(UI.BloomThreshold, vs.BLOOM_THRESHOLD)
+
+uiSet(UI.CCEnabled, vs.COLORCORRECTION_ENABLED)
+uiSet(UI.CCBrightness, vs.COLORCORRECTION_BRIGHTNESS)
+uiSet(UI.CCContrast, vs.COLORCORRECTION_CONTRAST)
+uiSet(UI.CCSaturation, vs.COLORCORRECTION_SATURATION)
+
 	local esp = ESP:GetSettings()
 	uiSet(UI.ESPEnabled, esp.ESP_ENABLED)
 	uiSet(UI.SelfESP, esp.SELF_ESP)
