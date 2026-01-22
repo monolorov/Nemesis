@@ -127,9 +127,38 @@ self.SKY_PRESETS = {
 		StarCount = 3000,
 		SunAngularSize = 21,
 		SunTextureId = "rbxasset://sky/sun.jpg"
+	},
+
+	Purple = {
+		CelestialBodiesShown = true,
+		MoonAngularSize = 11,
+		MoonTextureId = "rbxasset://sky/moon.jpg",
+		SkyboxBk = "rbxassetid://75339068650022",
+		SkyboxDn = "rbxassetid://103288557260150",
+		SkyboxFt = "rbxassetid://131140417030026",
+		SkyboxLf = "rbxassetid://91178363674210",
+		SkyboxRt = "rbxassetid://91811655162047",
+		SkyboxUp = "rbxassetid://70646477316976",
+		StarCount = 3000,
+		SunAngularSize = 14,
+		SunTextureId = "rbxassetid://13683514089"
+	},
+
+	Red = {
+		CelestialBodiesShown = false,
+		MoonAngularSize = 11,
+		MoonTextureId = "rbxasset://sky/moon.jpg",
+		SkyboxBk = "rbxassetid://108929045660200",
+		SkyboxDn = "rbxassetid://78646480540009",
+		SkyboxFt = "rbxassetid://90546017435179",
+		SkyboxLf = "rbxassetid://109838453114563",
+		SkyboxRt = "rbxassetid://94190734796082",
+		SkyboxUp = "rbxassetid://126944775797063",
+		StarCount = 3000,
+		SunAngularSize = 21,
+		SunTextureId = "rbxasset://sky/sun.jpg"
 	}
 }
-
 	local s = Lighting:FindFirstChildOfClass("Sky")
 	if s then
 		self.ORIGINAL_SKY = s:Clone()
