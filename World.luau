@@ -32,7 +32,27 @@ self.CUSTOM_SKY_ENABLED = false
 self.CUSTOM_SKY_PRESET = "Original"
 
 self.SKY_PRESETS = {
-	Original = nil,
+	Original = {
+		SkyboxBk = "rbxassetid://148345460",
+		SkyboxDn = "rbxassetid://148345469",
+		SkyboxFt = "rbxassetid://148345455",
+		SkyboxLf = "rbxassetid://148345446",
+		SkyboxRt = "rbxassetid://148345440",
+		SkyboxUp = "rbxassetid://148345466",
+		SunTextureId = "rbxassetid://1345009717",
+		MoonTextureId = "rbxasset://sky/moon.jpg",
+		StarCount = 3000
+	},
+
+	Blue = {
+		SkyboxBk = "rbxassetid://124106120273678",
+		SkyboxDn = "rbxassetid://72406028001064",
+		SkyboxFt = "rbxassetid://139238600782726",
+		SkyboxLf = "rbxassetid://139363840022859",
+		SkyboxRt = "rbxassetid://122628916393316",
+		SkyboxUp = "rbxassetid://104354476381566",
+		StarCount = 3000
+	},
 
 	Gray = {
 		CelestialBodiesShown = true,
