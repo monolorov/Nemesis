@@ -879,7 +879,7 @@ do
 
 UI.SkyPreset = WorldSec:AddDropdown({
 	Name = "Sky Preset",
-	Values = {"Original", "Blue", "Gray", "Dark", "Green", "Pink", "Orange"},
+	Values = {"Original", "Blue", "Red", "Purple", "Gray", "Dark", "Green", "Pink", "Orange"},
 	Default = "Original",
 	Callback = function(v)
 		if APPLYING_CONFIG then return end
