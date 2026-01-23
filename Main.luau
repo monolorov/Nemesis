@@ -185,12 +185,14 @@ CenterText.TextWrapped = true
 CenterText.ZIndex = 12
 CenterText.Parent = WatermarkGui
 
-local ImageStroke = Instance.new("UIStroke")
-ImageStroke.Thickness = 0.5
-ImageStroke.Color = Color3.fromRGB(0, 0, 0)
-ImageStroke.Transparency = 0
-ImageStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-ImageStroke.Parent = CenterImage
+local CenterTextStroke = Instance.new("UIStroke")
+CenterTextStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+CenterTextStroke.StrokeSizingMode = Enum.StrokeSizingMode.FixedSize
+CenterTextStroke.LineJoinMode = Enum.LineJoinMode.Round
+CenterTextStroke.Thickness = 0.5
+CenterTextStroke.Color = Color3.fromRGB(0, 0, 0)
+CenterTextStroke.Transparency = 0
+CenterTextStroke.Parent = CenterText
 
 
 local CenterGradient = Instance.new("UIGradient")
