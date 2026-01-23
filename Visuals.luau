@@ -607,7 +607,7 @@ function VisualsModule:CreateOffscreenArrows()
 	local function createArrow(plr)
 		local img = Instance.new("ImageLabel")
 		img.Name = plr.Name .. "_Arrow"
-		img.Size = UDim2.fromOffset(26, 26)
+		img.Size = UDim2.fromOffset(34, 34)
 		img.AnchorPoint = Vector2.new(0.5, 0.5)
 		img.BackgroundTransparency = 1
 		img.Image = "rbxassetid://121771059734689"
@@ -655,6 +655,7 @@ function VisualsModule:CreateOffscreenArrows()
 	self.player:GetPropertyChangedSignal("Team"):Connect(refreshArrows)
 
 	self.RunService.RenderStepped:Connect(function()
+local t = tick()
 		self.Camera = self.Workspace.CurrentCamera or self.Camera
 		local Camera = self.Camera
 		if not Camera then return end
@@ -703,13 +704,25 @@ function VisualsModule:CreateOffscreenArrows()
 			local angle = math.atan2(x, z)
 			local rot = math.deg(angle)
 
-			local maxRadius = math.min(650, math.min(vp.X, vp.Y) * 0.45)
+			local maxRadius = math.min(420, math.min(vp.X, vp.Y) * 0.35)
 			local pos = center + Vector2.new(math.sin(angle), -math.cos(angle)) * maxRadius
 
 			arrow.Position = UDim2.fromOffset(pos.X, pos.Y)
 			arrow.Rotation = rot + 180
 			arrow.ImageColor3 = self.OFFSCREEN_COLOR
 			arrow.Visible = true
+
+local pulse = (math.sin(t * 3) + 1) * 0.5
+
+local baseSize = arrow:GetAttribute("BaseSize") or 34
+local scale = 1 + pulse * 0.12
+
+arrow.Size = UDim2.fromOffset(
+	baseSize * scale,
+	baseSize * scale
+)
+
+arrow.ImageTransparency = 0.25 + pulse * 0.12
 		end
 	end)
 end
