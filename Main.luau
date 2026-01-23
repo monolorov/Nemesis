@@ -130,7 +130,8 @@ Corner.Parent = WatermarkFrame
 local TextContainer = Instance.new("Frame")
 TextContainer.BackgroundTransparency = 1
 TextContainer.Position = UDim2.fromOffset(10, 0)
-TextContainer.Size = UDim2.new(1, -20, 1, 0)
+TextContainer.Size = UDim2.new(0, 0, 1, 0)
+TextContainer.AutomaticSize = Enum.AutomaticSize.X
 TextContainer.ZIndex = 11
 TextContainer.Parent = WatermarkFrame
 
@@ -152,6 +153,49 @@ NemesisGradient.Color = ColorSequence.new({
 	ColorSequenceKeypoint.new(1, Color3.fromRGB(194, 41, 41))
 })
 NemesisGradient.Parent = NemesisLabel
+
+-- ============================================
+-- Center branding (image + text)
+-- ============================================
+
+local CenterImage = Instance.new("ImageLabel")
+CenterImage.BackgroundTransparency = 1
+CenterImage.BorderSizePixel = 0
+CenterImage.AnchorPoint = Vector2.new(0.5, 0.5)
+CenterImage.Position = UDim2.new(0.5, 0, 0.5, 0)
+CenterImage.Size = UDim2.new(0.107632093, 0, 0.0228915662, 0)
+CenterImage.Image = "rbxassetid://101484652640045"
+CenterImage.ImageColor3 = Color3.fromRGB(255, 69, 72)
+CenterImage.ImageTransparency = 0.51
+CenterImage.ZIndex = 11
+CenterImage.Parent = WatermarkFrame
+
+
+local CenterText = Instance.new("TextLabel")
+CenterText.AnchorPoint = Vector2.new(0.5, 0.5)
+CenterText.BackgroundTransparency = 1
+CenterText.BorderSizePixel = 0
+CenterText.Position = UDim2.new(0.5, 0, 0.5, 0)
+CenterText.Size = UDim2.new(0.2, 0, 0.1, 0)
+CenterText.Font = Enum.Font.ArialBold
+CenterText.Text = "NEMESIS.lua"
+CenterText.TextColor3 = Color3.fromRGB(255, 255, 255)
+CenterText.TextSize = 14
+CenterText.TextWrapped = true
+CenterText.ZIndex = 12
+CenterText.Parent = WatermarkFrame
+
+
+local CenterGradient = Instance.new("UIGradient")
+CenterGradient.Color = ColorSequence.new({
+	ColorSequenceKeypoint.new(0.00, Color3.fromRGB(161, 35, 37)),
+	ColorSequenceKeypoint.new(0.20, Color3.fromRGB(179, 46, 49)),
+	ColorSequenceKeypoint.new(0.38, Color3.fromRGB(167, 43, 45)),
+	ColorSequenceKeypoint.new(0.56, Color3.fromRGB(255, 255, 255)),
+	ColorSequenceKeypoint.new(0.72, Color3.fromRGB(180, 0, 3)),
+	ColorSequenceKeypoint.new(1.00, Color3.fromRGB(139, 36, 38))
+})
+CenterGradient.Parent = CenterText
 
 local InfoLabel = Instance.new("TextLabel")
 InfoLabel.BackgroundTransparency = 1
@@ -195,6 +239,13 @@ RunService.RenderStepped:Connect(function(dt)
 	rotation = (rotation + dt * 30) % 360
 	NemesisGradient.Rotation = rotation
 
+-- Center gradient rotate
+CenterGradient.Rotation = (CenterGradient.Rotation + dt * 60) % 360
+
+-- Pulse effect
+local pulse = 0.55 + math.sin(tick() * 1.5) * 0.08
+CenterImage.ImageTransparency = math.clamp(pulse, 0.35, 0.7)
+
 	local ping = 0
 	pcall(function()
 		local n = Stats.Network.ServerStatsItem
@@ -220,7 +271,13 @@ RunService.RenderStepped:Connect(function(dt)
 	InfoLabel.Position = UDim2.fromOffset(nSize.X + 8, 0)
 	InfoLabel.Size = UDim2.fromOffset(iSize.X, 32)
 
-	WatermarkFrame.Size = UDim2.fromOffset(nSize.X + iSize.X + 28, 32)
+local baseWidth = nSize.X + iSize.X + 28
+local minWidth = 300
+
+WatermarkFrame.Size = UDim2.fromOffset(
+	math.max(baseWidth, minWidth),
+	32
+)
 end)
 
 -- ============================================
