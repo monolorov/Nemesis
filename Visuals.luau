@@ -713,8 +713,8 @@ local t = tick()
 			arrow.ImageColor3 = self.OFFSCREEN_COLOR
 			arrow.Visible = true
 
-local pulse = math.abs(math.sin(t * 8))
-arrow.ImageTransparency = 0.05 + pulse * 0.65
+local pulse = math.abs(math.sin(t * 4.5))
+arrow.ImageTransparency = 0.1 + pulse * 0.65
 		end
 	end)
 end
